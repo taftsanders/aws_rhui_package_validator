@@ -1,0 +1,10 @@
+- scrape for latest rpm
+- download latest rpms
+- extract rpms
+- scrape region list 
+- grep all mirror list urls
+ -- replace 'mirror' with repos
+ -- sort and combine unique
+ -- make short list, long list, full list, etc
+- make a cert chain of all certs and keys? Will this work?
+- make main file to call all repos for all/unique region
