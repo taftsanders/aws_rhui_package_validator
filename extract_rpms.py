@@ -21,8 +21,8 @@ def download_rhel6_rpms():
     #gl.get_latest_version()
     for rpm in gl.get_rhel6_rpms():
         os.mkdir(rpm)
-        os.chdir(PARENT + rpms)
-        wget.download(rpm)
+        os.chdir(rpm)
+        wget.download(gl.PARENT + gl.VERSION + gl.RHEL6 + rpm)
         extract(rpm)
 
 def download_rhel7_rpms():
@@ -30,8 +30,8 @@ def download_rhel7_rpms():
     #gl.get_latest_version()
     for rpm in gl.get_rhel7_rpms():
         os.mkdir(rpm)
-        os.chdir(PARENT + rpm)
-        wget.download(rpm)
+        os.chdir(RHEL7_DIR + rpm)
+        wget.download(gl.PARENT + gl.VERSION + gl.RHEL7 + rpm)
         extract(rpm)
 
 def download_rhel8_rpms():
@@ -40,9 +40,9 @@ def download_rhel8_rpms():
     for rpm in gl.get_rhel8_rpms():
         os.mkdir(rpm)
         os.chdir(PARENT + rpm)
-        wget.download(rpm)
+        wget.download(gl.PARENT + gl.VERSION + gl.RHEL8 + rpm)
         extract(rpm)
 
-def extract():
+def extract(rpm):
     os.system('rpm2cpio ' + rpm + ' | cpio -id')
     

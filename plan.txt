@@ -1,8 +1,10 @@
-- scrape for latest rpm
-- download latest rpms
-- extract rpms
-- scrape region list 
-- grep all mirror list urls
+get_links.py - scrape for latest rpm
+extract_rpms.py - download latest rpms
+extract_rpms.py - extract rpms
+get_links.py - scrape region list 
+get_repos.py - combine all certs
+get_repos.py - grep all repo names
+get_repos.py - grep all mirror list urls
  -- replace 'mirror' with repos
  -- sort and combine unique
  -- make short list, long list, full list, etc
