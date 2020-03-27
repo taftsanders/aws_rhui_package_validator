@@ -26,6 +26,7 @@ def get_rhel6_rpms():
     endpoints = soup.find_all("a")[5:-5]
     for link in endpoints:
         rhel6_rpms.append(link.text)
+    return rhel6_rpms
 
 def get_rhel7_rpms():
     rhel7_rpms = []
@@ -34,6 +35,7 @@ def get_rhel7_rpms():
     endpoints = soup.find_all("a")[5:-5]
     for link in endpoints:
         rhel7_rpms.append(link.text)
+    return rhel7_rpms
 
 def get_rhel8_rpms():
     rhel8_rpms = []
@@ -42,6 +44,7 @@ def get_rhel8_rpms():
     endpoints = soup.find_all("a")[5:-5]
     for link in endpoints:
         rhel8_rpms.append(link.text)
+    return rhel8_rpms
 
 def get_regions():
     regions = []
@@ -51,3 +54,4 @@ def get_regions():
     while td < len(soup.table('td')):
         regions.append(td)
         td+=4
+    return regions

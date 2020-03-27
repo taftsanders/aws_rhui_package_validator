@@ -13,7 +13,7 @@ get_repos.py - combine all certs
 get_repos.py - grep all repo names
 get_repos.py - grep all mirror list urls
  -- replace 'mirror' with repos
- -- sort and combine unique
+get_repos.py -- sort and combine unique
  -- make short list, long list, full list, etc
 - make a cert chain of all certs and keys? Will this work?
 - make main file to call all repos for all/unique region

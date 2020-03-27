@@ -49,20 +49,42 @@ def get_ca():
         with open('rhui-ca.crt', 'w') as master:
             master.write(ca.read())
 
-
-''' Still WIP
+# Create a nested dict of all repos from all repo files passed in
+# {file:{
+#       repo name:{
+#               mirrorlist:
+#               sslcacert:
+#               sslclientcert:
+#               sslclientkey:
+# }}}
 def get_repo_specifics(repo_files):
+#    repo_list = {}
+#    for file in repo_files:
+#        config.read(file)
+#        repo_list[file]={}
+#        for i in config.sections():
+#            repo_list[file][i]={}
+#            repo_list[file][i]['mirrorlist'] = config[i]['mirrorlist'] 
+#            repo_list[file][i]['sslcacert'] = config[i]['sslcacert']   # removed because all certs are combined
+#            repo_list[file][i]['sslclientcert'] = config[i]['sslclientcert'] # removed because all certs are combined
+#            repo_list[file][i]['sslclientkey'] = config[i]['sslclientkey'] # removed because all certs are combined
+#    return repo_list
     repo_list = []
-    for file in repo_files:
-        config.read(file)
-        for i in config.sections(): 
-            repo_list.append(file)
-            list=[] 
-            list.append(i) 
-            list.append(config[i]['mirrorlist']) 
-            list.append(config[i]['sslcacert']) 
-            list.append(config[i]['sslclientcert']) 
-            list.append(config[i]['sslclientkey']) 
-            repo_list.append(list) 
-'''
+    for file in repo_files: 
+        config.read(file) 
+        for mirror in config.sections(): 
+            mirror_dict = {} 
+            mirror_dict[mirror] = config[mirror]['mirrorlist'] 
+            repo_list.append(mirror_dict)
+    new_list = []
+    for repo in repo_list:
+        if repo not in new_list:
+            new_list.append(repo)
+
+def combine_like_repos(repo_list):
+    repos = []
+    for file in repo_list.keys():
+        for name in repo_list[file].keys():
+            repos.append(name)
+    repos= set(repos)
 
