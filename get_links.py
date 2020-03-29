@@ -29,7 +29,8 @@ def get_rhel6_rpms():
     for link in endpoints:
         rhel6_rpms.append(link.text)
     print('RHEL6 RPMs to download: ')
-    print(rhel6_rpms)
+    for rpm in rhel6_rpms:
+        print(rpm)
     return rhel6_rpms
 
 def get_rhel7_rpms():
@@ -40,7 +41,8 @@ def get_rhel7_rpms():
     for link in endpoints:
         rhel7_rpms.append(link.text)
     print('RHEL7 RPMs to download: ')
-    print(rhel7_rpms)
+    for rpm in rhel7_rpms:
+        print(rpm)
     return rhel7_rpms
 
 def get_rhel8_rpms():
@@ -51,7 +53,8 @@ def get_rhel8_rpms():
     for link in endpoints:
         rhel8_rpms.append(link.text)
     print('RHEL8 RPMs to download: ')
-    print(rhel8_rpms)
+    for rpm in rhel8_rpms:
+        print(rpm)
     return rhel8_rpms
 
 def get_regions():
