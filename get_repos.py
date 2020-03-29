@@ -82,11 +82,13 @@ def get_repo_specifics(repo_files):
             new_list.append(repo)
     return new_list
 
-def combine_like_repos(repo_list):
-    repos = []
-    for file in repo_list.keys():
-        for name in repo_list[file].keys():
-            repos.append(name)
-    repos= set(repos)
-    return repos
+#def combine_like_repos(repo_list):
+#    repos = []
+#    import pdb
+#    pdb.set_trace()
+#    for file in repo_list:
+#        for name in repo_list[file].keys():
+#            repos.append(name)
+#    repos= set(repos)
+#    return repos
 

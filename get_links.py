@@ -4,9 +4,9 @@ import bs4
 
 
 PARENT = 'http://download-node-02.eng.bos.redhat.com/brewroot/packages/rh-amazon-rhui-client/'
-RHEL6 = '1.el6/noarch'
-RHEL7 = '1.el7/noarch'
-RHEL8 = '1.el8/noarch'
+RHEL6 = '1.el6/noarch/'
+RHEL7 = '1.el7/noarch/'
+RHEL8 = '1.el8/noarch/'
 PACKAGE = ''
 REGION_URL = 'https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html'
 req = urllib3.PoolManager()
@@ -15,6 +15,8 @@ def get_latest_version():
     rpm_version = req.request('GET', PARENT)
     soup = bs4.BeautifulSoup(rpm_version.data, 'html.parser')
     latest = soup.find_all("a")[-5].text
+    print('Getting latest rpm version: ')
+    print(latest)
     return latest
 
 VERSION = get_latest_version()
@@ -26,6 +28,8 @@ def get_rhel6_rpms():
     endpoints = soup.find_all("a")[5:-5]
     for link in endpoints:
         rhel6_rpms.append(link.text)
+    print('RHEL6 RPMs to download: ')
+    print(rhel6_rpms)
     return rhel6_rpms
 
 def get_rhel7_rpms():
@@ -35,6 +39,8 @@ def get_rhel7_rpms():
     endpoints = soup.find_all("a")[5:-5]
     for link in endpoints:
         rhel7_rpms.append(link.text)
+    print('RHEL7 RPMs to download: ')
+    print(rhel7_rpms)
     return rhel7_rpms
 
 def get_rhel8_rpms():
@@ -44,6 +50,8 @@ def get_rhel8_rpms():
     endpoints = soup.find_all("a")[5:-5]
     for link in endpoints:
         rhel8_rpms.append(link.text)
+    print('RHEL8 RPMs to download: ')
+    print(rhel8_rpms)
     return rhel8_rpms
 
 def get_regions():
@@ -54,4 +62,6 @@ def get_regions():
     while td < len(soup.table('td')):
         regions.append(td)
         td+=4
+    print('Regions collected: ')
+    print(regions)
     return regions
