@@ -1,8 +1,11 @@
 import os
 import glob
 import configparser
+import extract_rpms as exrpms
 
-config = configparser.ConfigParser()
+rhel6_filtered_repo_mirror = []
+rhel7_filtered_repo_mirror = []
+rhel8_filtered_repo_mirror = []
 
 def get_rhel6_repo_files():
     repo_files=[]
@@ -71,6 +74,7 @@ def get_repo_specifics(repo_files):
 #    return repo_list
     repo_list = []
     for file in repo_files: 
+        config = configparser.ConfigParser()
         config.read(file) 
         for mirror in config.sections(): 
             mirror_dict = {} 
@@ -82,13 +86,103 @@ def get_repo_specifics(repo_files):
             new_list.append(repo)
     return new_list
 
-#def combine_like_repos(repo_list):
-#    repos = []
-#    import pdb
-#    pdb.set_trace()
-#    for file in repo_list:
-#        for name in repo_list[file].keys():
-#            repos.append(name)
-#    repos= set(repos)
-#    return repos
+def get_mirror_list():
+    exrpms.download_rhel6_rpms()
+    exrpms.download_rhel7_rpms()
+    exrpms.download_rhel8_rpms()
+    combine_certs()
+    combine_keys()
+    get_ca()
+    global rhel6_filtered_repo_mirror
+    rhel6_filtered_repo_mirror = get_repo_specifics(get_rhel6_repo_files())
+    global rhel7_filtered_repo_mirror
+    rhel7_filtered_repo_mirror = get_repo_specifics(get_rhel7_repo_files())
+    global rhel8_filtered_repo_mirror
+    rhel8_filtered_repo_mirror = get_repo_specifics(get_rhel8_repo_files())
+#DEBUGGING
+    print('rhel6 repo list: ' + str(len(rhel6_filtered_repo_mirror)))
+    for i in rhel6_filtered_repo_mirror:
+        print(i)
+    print('rhel7 repo list: ' + str(len(rhel7_filtered_repo_mirror)))
+    for i in rhel7_filtered_repo_mirror:
+        print(i)
+    print('rhel8 repo list: ' + str(len(rhel8_filtered_repo_mirror)))
+    for i in rhel8_filtered_repo_mirror:
+        print(i)
 
+'''
+Until I hear back from Martin about the duplicate RHEL6 repos on the RHEL7&8 we
+will need to combine all repos into 1 list
+'''
+def combine_lists(rhel6, rhel7, rhel8):
+    concat_lists = rhel6 + rhel7 + rhel8
+    combined_list = []
+    for repo in concat_lists:
+        if repo not in combined_list:
+            combined_list.append(repo)
+    print(len(combined_list))
+    return combined_list
+
+def replace_region(mirror_dict, region):
+    key, value = list(mirror_dict.items())[0]
+    if 'REGION' in value or 'REGION' in key:
+        url = value.replace('REGION', region)
+        name = key.replace('REGION', region)
+    else:
+        url = value
+        name = key
+    return name, url
+
+def replace_basearch(mirror_dict, arch):
+    key, value = list(mirror_dict.items())[0]
+    if '$basearch' in value:
+        url = value.replace('$basearch', arch)
+    else:
+        url = value
+    return key, url
+
+def replace_releasever(mirror_dict, release):
+    key, value = list(mirror_dict.items())[0]
+    if '$releasever' in value:
+        url = value.replace('$releasever', release)
+    else:
+        url = value
+    return key, url
+
+'''
+def replace_variables(repo_list):
+    unvariabled_repo_list = []
+    for repo in repo_list: 
+        key, value = list(repo.items())[0] 
+        new_url='' 
+        name='' 
+        temp_dict = {}
+        if 'REGION' in value: 
+            unreg_url = value.replace('REGION', 'us-east-1') 
+            new_url=unreg_url 
+            if '$basearch' in value: 
+                unbased_url = unreg_url.replace('$basearch', 'x86_64') 
+                new_url=unbased_url 
+                if '$releasever' in value: 
+                    unrel_url = unbased_url.replace('$releasever', '7Server')  
+                    new_url=unrel_url 
+            elif '$releasever' in value: 
+                unrel_url = unreg_url.replace('$releasever', '7Server') 
+                new_url=unrel_url 
+        elif '$basearch' in value: 
+                unbased_url = value.replace('$basearch', 'us-east-1') 
+                new_url = unbased_url 
+                if '$releasever' in value: 
+                    unrel_url = unbased_url.replace('$releasever', '7Server') 
+                    new_url = unrel_url 
+        elif '$releasever' in value: 
+                unrel_url = value.replace('$releasever', '7Server') 
+                new_url = unrel_url         
+        if 'REGION' in key: 
+            name = key.replace('REGION', 'us-east-1') 
+        else: 
+            name = key 
+        temp_dict[name] = new_url
+        unvariabled_repo_list.append(temp_dict) 
+    return unvariabled_repo_list
+'''

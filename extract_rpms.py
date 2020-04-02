@@ -16,6 +16,11 @@ def make_dir():
             os.mkdir(RHEL6_DIR)
             os.mkdir(RHEL7_DIR)
             os.mkdir(RHEL8_DIR)
+        else:
+            os.mkdir(PARENT)
+            os.mkdir(RHEL6_DIR)
+            os.mkdir(RHEL7_DIR)
+            os.mkdir(RHEL8_DIR)
     except OSError:
         print("Could not create the /tmp/rhui-client-rpms directory")
 

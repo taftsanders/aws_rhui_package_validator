@@ -57,6 +57,7 @@ def get_rhel8_rpms():
         print(rpm)
     return rhel8_rpms
 
+# ! REGIONS ARE PRINTING INTS, NOT STRINGS
 def get_regions():
     regions = []
     region_page = req.request('GET', REGION_URL)
@@ -68,3 +69,8 @@ def get_regions():
     print('Regions collected: ')
     print(regions)
     return regions
+
+'''
+Need to find a place to scrap archs and release versions
+Hard coding for now
+'''
