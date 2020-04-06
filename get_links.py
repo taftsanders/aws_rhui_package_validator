@@ -57,20 +57,17 @@ def get_rhel8_rpms():
         print(rpm)
     return rhel8_rpms
 
-# ! REGIONS ARE PRINTING INTS, NOT STRINGS
 def get_regions():
     regions = []
     region_page = req.request('GET', REGION_URL)
     soup = bs4.BeautifulSoup(region_page.data, 'html.parser')
     td = 1
     while td < len(soup.table('td')):
-        regions.append(td)
+        regions.append(soup.table('td')[td].text)
         td+=4
-    print('Regions collected: ')
-    print(regions)
     return regions
 
 '''
-Need to find a place to scrap archs and release versions
+Need to find a place to scrape archs and release versions
 Hard coding for now
 '''

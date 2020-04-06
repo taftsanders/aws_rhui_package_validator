@@ -8,6 +8,7 @@ rhel7_filtered_repo_mirror = []
 rhel8_filtered_repo_mirror = []
 
 def get_rhel6_repo_files():
+    exrpms.download_rhel6_rpms()
     repo_files=[]
     os.chdir('/tmp/rhui-client-rpms/rhel6/')
     for file in glob.iglob('**/*.repo', recursive=True):
@@ -15,6 +16,7 @@ def get_rhel6_repo_files():
     return repo_files
 
 def get_rhel7_repo_files():
+    exrpms.download_rhel7_rpms()
     repo_files=[]
     os.chdir('/tmp/rhui-client-rpms/rhel7/')
     for file in glob.iglob('**/*.repo', recursive=True):
@@ -22,6 +24,7 @@ def get_rhel7_repo_files():
     return repo_files
 
 def get_rhel8_repo_files():
+    exrpms.download_rhel8_rpms()
     repo_files=[]
     os.chdir('/tmp/rhui-client-rpms/rhel8/')
     for file in glob.iglob('**/*.repo', recursive=True):
@@ -87,44 +90,28 @@ def get_repo_specifics(repo_files):
     return new_list
 
 def get_mirror_list():
-    exrpms.download_rhel6_rpms()
-    exrpms.download_rhel7_rpms()
-    exrpms.download_rhel8_rpms()
-    combine_certs()
-    combine_keys()
-    get_ca()
+    exrpms.make_dir()
     global rhel6_filtered_repo_mirror
     rhel6_filtered_repo_mirror = get_repo_specifics(get_rhel6_repo_files())
     global rhel7_filtered_repo_mirror
     rhel7_filtered_repo_mirror = get_repo_specifics(get_rhel7_repo_files())
     global rhel8_filtered_repo_mirror
     rhel8_filtered_repo_mirror = get_repo_specifics(get_rhel8_repo_files())
+    combine_certs()
+    combine_keys()
+    get_ca()
 #DEBUGGING
-    print('rhel6 repo list: ' + str(len(rhel6_filtered_repo_mirror)))
-    for i in rhel6_filtered_repo_mirror:
-        print(i)
-    print('rhel7 repo list: ' + str(len(rhel7_filtered_repo_mirror)))
-    for i in rhel7_filtered_repo_mirror:
-        print(i)
-    print('rhel8 repo list: ' + str(len(rhel8_filtered_repo_mirror)))
-    for i in rhel8_filtered_repo_mirror:
-        print(i)
+#    print('rhel6 repo list: ' + str(len(rhel6_filtered_repo_mirror)))
+#    for i in rhel6_filtered_repo_mirror:
+#        print(i)
+#    print('rhel7 repo list: ' + str(len(rhel7_filtered_repo_mirror)))
+#   for i in rhel7_filtered_repo_mirror:
+#        print(i)
+#    print('rhel8 repo list: ' + str(len(rhel8_filtered_repo_mirror)))
+#    for i in rhel8_filtered_repo_mirror:
+#        print(i)
 
-'''
-Until I hear back from Martin about the duplicate RHEL6 repos on the RHEL7&8 we
-will need to combine all repos into 1 list
-'''
-def combine_lists(rhel6, rhel7, rhel8):
-    concat_lists = rhel6 + rhel7 + rhel8
-    combined_list = []
-    for repo in concat_lists:
-        if repo not in combined_list:
-            combined_list.append(repo)
-    print(len(combined_list))
-    return combined_list
-
-def replace_region(mirror_dict, region):
-    key, value = list(mirror_dict.items())[0]
+def replace_region(key, value, region):
     if 'REGION' in value or 'REGION' in key:
         url = value.replace('REGION', region)
         name = key.replace('REGION', region)
@@ -133,21 +120,23 @@ def replace_region(mirror_dict, region):
         name = key
     return name, url
 
-def replace_basearch(mirror_dict, arch):
-    key, value = list(mirror_dict.items())[0]
-    if '$basearch' in value:
+def replace_basearch(key, value, arch):
+    if '$basearch' in value or '$basearch' in key:
         url = value.replace('$basearch', arch)
+        name = key.replace('$basearch', arch)
     else:
         url = value
-    return key, url
+        name = key 
+    return name, url
 
-def replace_releasever(mirror_dict, release):
-    key, value = list(mirror_dict.items())[0]
-    if '$releasever' in value:
+def replace_releasever(key, value, release):
+    if '$releasever' in value or '$releasever' in key:
         url = value.replace('$releasever', release)
+        name = key.replace('$releasever', release)
     else:
         url = value
-    return key, url
+        name = key
+    return name, url
 
 '''
 def replace_variables(repo_list):
