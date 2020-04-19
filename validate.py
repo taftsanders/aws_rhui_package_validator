@@ -3,6 +3,6 @@ import extract_rpms as exrpms
 import get_mirrors as gm
 
 def main():
-    repomd.devariabled_values()
+    repomd.get_RHEL6_repomd()
 
 main()

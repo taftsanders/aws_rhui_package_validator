@@ -39,6 +39,6 @@ def get_rhel6_repos():
                     baserepo = req.request('GET', url3).data.decode('utf-8')
                     custom_name3 = name3 + '-' + arch + '-' + release
                     repo[custom_name3] = baserepo.split('\n')
-                    print(repo)
+#                    print(repo)
                     rhel6_mirrors.append(repo)
     return rhel6_mirrors
