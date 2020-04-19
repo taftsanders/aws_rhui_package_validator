@@ -37,7 +37,8 @@ def get_rhel6_repos():
                     name3, url3 = gm.replace_releasever(name2, url2, release)
                     repo = {}
                     baserepo = req.request('GET', url3).data.decode('utf-8')
-                    repo[name3] = baserepo.split('\n')
+                    custom_name3 = name3 + '-' + arch + '-' + release
+                    repo[custom_name3] = baserepo.split('\n')
                     print(repo)
                     rhel6_mirrors.append(repo)
     return rhel6_mirrors
