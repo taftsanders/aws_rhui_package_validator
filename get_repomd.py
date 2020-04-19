@@ -2,8 +2,17 @@ import os
 import get_repos as gr
 import get_mirrors as gm
 import urllib3
+import configparser
 import warnings
 warnings.simplefilter('ignore', urllib3.exceptions.SecurityWarning)
+
+
+def get_aws_creds():
+    config = configparser.ConfigParser()
+    #copied ~/aws_creds.txt to /tmp/rhui-client-rpms/creds.txt
+    config.read('/tmp/rhui-client-rpms/creds.txt')
+    #left off here
+    #get the X-RHUI-ID and X-RHUI-SIGNATURE from creds.txt
 
 
 '''
