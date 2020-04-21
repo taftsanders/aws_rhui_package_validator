@@ -3,17 +3,28 @@ import get_repos as gr
 import get_mirrors as gm
 import urllib3
 import configparser
+from fabric.api import env
+from fabric.operations import run as fabric_run
+from fabric.context_managers import settings, hide 
 import warnings
 warnings.simplefilter('ignore', urllib3.exceptions.SecurityWarning)
 
+X_RHUI_ID = ''
+X_RHUI_SIGNATURE = ''
 
-def get_aws_creds():
-    config = configparser.ConfigParser()
-    #copied ~/aws_creds.txt to /tmp/rhui-client-rpms/creds.txt
-    config.read('/tmp/rhui-client-rpms/creds.txt')
-    #left off here
-    #get the X-RHUI-ID and X-RHUI-SIGNATURE from creds.txt
-
+def get_instance_headers(AWS_HOST = 'ec2-3-86-214-153.compute-1.amazonaws.com',
+                            AWS_USER = 'ec2-user',
+                            SSH_KEY = '/home/tasander/.ssh/tasander.cer'
+                            ):
+    env.user = AWS_USER
+    env.use_ssh_config = True
+    env.key_filename = SSH_KEY
+    with settings(hide('everything'), host_string=AWS_HOST):
+        results = fabric_run('sudo yum repolist | grep X-RHUI')
+    global X_RHUI_ID
+    X_RHUI_ID = results.split()[1]
+    global X_RHUI_SIGNATURE
+    X_RHUI_SIGNATURE = results.split()[3]
 
 '''
 Make the calls here to get the repodata and parse it
