@@ -31,18 +31,18 @@ def get_rhel8_repo_files():
         repo_files.append(file)
     return repo_files
 
-def combine_certs():
-    os.chdir('/tmp/rhui-client-rpms/')
-    for file in glob.iglob('*/*/etc/pki/rhui/product/*.crt', recursive=True): 
+def combine_certs(dir):
+    os.chdir('/tmp/rhui-client-rpms/' + dir)
+    for file in glob.iglob('*/etc/pki/rhui/product/*.crt', recursive=True): 
          with open(file, 'r') as cert: 
-            with open('master-content-cert.crt', 'a') as master:
+            with open('/tmp/rhui-client-rpms/' + dir + '/master-content-cert.crt', 'a+') as master:
                 master.write(cert.read())
 
-def combine_keys():
-    os.chdir('/tmp/rhui-client-rpms/')
-    for file in glob.iglob('*/*/etc/pki/rhui/*.key', recursive=True): 
+def combine_keys(dir):
+    os.chdir('/tmp/rhui-client-rpms/' + dir)
+    for file in glob.iglob('*/etc/pki/rhui/*.key', recursive=True): 
          with open(file, 'r') as key: 
-            with open('master-content-key.key', 'a') as master:
+            with open('/tmp/rhui-client-rpms/' + dir + '/master-content-key.key', 'a+') as master:
                 master.write(key.read())
 
 # What if the CA is bad in cert[0], future code should include comparison check for these certs
@@ -52,17 +52,9 @@ def get_ca():
     for ca in glob.iglob('*/*/etc/pki/rhui/cdn.redhat.com-chain.crt', recursive=True):
         ca_files.append(ca)
     with open(ca_files[0], 'r') as ca:
-        with open('rhui-ca.crt', 'w') as master:
+        with open('rhui-ca.crt', 'w+') as master:
             master.write(ca.read())
 
-# Create a nested dict of all repos from all repo files passed in
-# {file:{
-#       repo name:{
-#               mirrorlist:
-#               sslcacert:
-#               sslclientcert:
-#               sslclientkey:
-# }}}
 def get_repo_specifics(repo_files):
 #    repo_list = {}
 #    for file in repo_files:
@@ -97,8 +89,12 @@ def get_mirror_list():
     rhel7_filtered_repo_mirror = get_repo_specifics(get_rhel7_repo_files())
     global rhel8_filtered_repo_mirror
     rhel8_filtered_repo_mirror = get_repo_specifics(get_rhel8_repo_files())
-    combine_certs()
-    combine_keys()
+    combine_certs('rhel6')
+    combine_certs('rhel7')
+    combine_certs('rhel8')
+    combine_keys('rhel6')
+    combine_keys('rhel7')
+    combine_keys('rhel8')
     get_ca()
 #DEBUGGING
 #    print('rhel6 repo list: ' + str(len(rhel6_filtered_repo_mirror)))
@@ -137,41 +133,3 @@ def replace_releasever(key, value, release):
         url = value
         name = key
     return name, url
-
-'''
-def replace_variables(repo_list):
-    unvariabled_repo_list = []
-    for repo in repo_list: 
-        key, value = list(repo.items())[0] 
-        new_url='' 
-        name='' 
-        temp_dict = {}
-        if 'REGION' in value: 
-            unreg_url = value.replace('REGION', 'us-east-1') 
-            new_url=unreg_url 
-            if '$basearch' in value: 
-                unbased_url = unreg_url.replace('$basearch', 'x86_64') 
-                new_url=unbased_url 
-                if '$releasever' in value: 
-                    unrel_url = unbased_url.replace('$releasever', '7Server')  
-                    new_url=unrel_url 
-            elif '$releasever' in value: 
-                unrel_url = unreg_url.replace('$releasever', '7Server') 
-                new_url=unrel_url 
-        elif '$basearch' in value: 
-                unbased_url = value.replace('$basearch', 'us-east-1') 
-                new_url = unbased_url 
-                if '$releasever' in value: 
-                    unrel_url = unbased_url.replace('$releasever', '7Server') 
-                    new_url = unrel_url 
-        elif '$releasever' in value: 
-                unrel_url = value.replace('$releasever', '7Server') 
-                new_url = unrel_url         
-        if 'REGION' in key: 
-            name = key.replace('REGION', 'us-east-1') 
-        else: 
-            name = key 
-        temp_dict[name] = new_url
-        unvariabled_repo_list.append(temp_dict) 
-    return unvariabled_repo_list
-'''

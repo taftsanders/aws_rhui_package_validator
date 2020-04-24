@@ -20,13 +20,14 @@ step 4: release version
 '''
 def get_rhel6_repos():
     rhel6_mirrors = []
-    regions = gl.get_regions()
+#    regions = gl.get_regions()
+    regions = ['us-east-1','us-east-1','us-east-1'] # For faster testing REMOVE ME
     for region in regions[:len(regions)-2]:
         req = urllib3.PoolManager(
             cert_reqs = 'CERT_REQUIRED',
             ca_certs='/tmp/rhui-client-rpms/rhui-ca.crt',
-            cert_file = '/tmp/rhui-client-rpms/master-content-cert.crt',
-            key_file = '/tmp/rhui-client-rpms/master-content-key.key',
+            cert_file = '/tmp/rhui-client-rpms/rhel6/master-content-cert.crt',
+            key_file = '/tmp/rhui-client-rpms/rhel6/master-content-key.key',
             )
         for repo_mirror in gm.rhel6_filtered_repo_mirror:
             name, url = list(repo_mirror.items())[0]           
@@ -39,6 +40,6 @@ def get_rhel6_repos():
                     baserepo = req.request('GET', url3).data.decode('utf-8')
                     custom_name3 = name3 + '-' + arch + '-' + release
                     repo[custom_name3] = baserepo.split('\n')
-#                    print(repo)
+                    print('Getting mirror list for: ' + custom_name3)
                     rhel6_mirrors.append(repo)
     return rhel6_mirrors
