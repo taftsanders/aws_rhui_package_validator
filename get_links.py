@@ -16,7 +16,6 @@ def get_latest_version():
     soup = bs4.BeautifulSoup(rpm_version.data, 'html.parser')
     latest = soup.find_all("a")[-5].text
     print('Getting latest rpm version: ')
-    print(latest)
     return latest
 
 VERSION = get_latest_version()
@@ -71,3 +70,10 @@ def get_regions():
 Need to find a place to scrape archs and release versions
 Hard coding for now
 '''
+
+if __name__ == "__main__":
+    print(get_latest_version())
+    print(get_rhel6_rpms())
+    print(get_rhel7_rpms())
+    print(get_rhel8_rpms())
+    print(get_regions())

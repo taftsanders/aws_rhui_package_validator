@@ -1,7 +1,15 @@
 import os
 import glob
 import configparser
+from shutil import copyfile
+from shutil import rmtree
 import extract_rpms as exrpms
+
+PARENT_HOME = '/tmp/rhui-client-rpms/'
+RHEL6_HOME = '/tmp/rhui-client-rpms/rhel6/'
+RHEL7_HOME = '/tmp/rhui-client-rpms/rhel7/'
+RHEL8_HOME = '/tmp/rhui-client-rpms/rhel8/'
+
 
 rhel6_filtered_repo_mirror = []
 rhel7_filtered_repo_mirror = []
@@ -10,27 +18,82 @@ rhel8_filtered_repo_mirror = []
 def get_rhel6_repo_files():
     exrpms.download_rhel6_rpms()
     repo_files=[]
-    os.chdir('/tmp/rhui-client-rpms/rhel6/')
+    os.chdir(RHEL6_HOME)
+    try:
+        os.mkdir(RHEL6_HOME + 'certs/')
+        os.mkdir(RHEL6_HOME + 'keys/')
+    except FileExistsError:
+        rmtree(RHEL6_HOME + 'certs')
+        rmtree(RHEL6_HOME + 'keys')
+        os.mkdir(RHEL6_HOME + 'certs/')
+        os.mkdir(RHEL6_HOME + 'keys/')
     for file in glob.iglob('**/*.repo', recursive=True):
-        repo_files.append(file)
+        repo_files.append(RHEL6_HOME + file)
+    for cert in glob.iglob('**/.crt', recursive=True):
+        copyfile(cert, RHEL6_HOME + 'certs/' + cert)
+    for key in glob.iglob('**/.key', recursive=True):
+        copyfile(key, RHEL6_HOME + 'keys/' + key)
     return repo_files
 
 def get_rhel7_repo_files():
     exrpms.download_rhel7_rpms()
     repo_files=[]
-    os.chdir('/tmp/rhui-client-rpms/rhel7/')
+    os.chdir(RHEL7_HOME)
+    try:
+        os.mkdir(RHEL7_HOME + 'certs/')
+        os.mkdir(RHEL7_HOME + 'keys/')
+    except FileExistsError:
+        rmtree(RHEL7_HOME + 'certs')
+        rmtree(RHEL7_HOME + 'keys')
+        os.mkdir(RHEL7_HOME + 'certs/')
+        os.mkdir(RHEL7_HOME + 'keys/')
     for file in glob.iglob('**/*.repo', recursive=True):
-        repo_files.append(file)
+        repo_files.append(RHEL7_HOME + file)
+    for cert in glob.iglob('**/.crt', recursive=True):
+        try:
+            copyfile(cert, RHEL7_HOME + 'certs/' + cert)
+        except FileExistsError:
+            rmtree(RHEL7_HOME + 'certs')
+            copyfile(cert, RHEL7_HOME + 'certs/' + cert)
+    for key in glob.iglob('**/.key', recursive=True):
+        try:
+            copyfile(key, RHEL7_HOME + 'keys/' + key)
+        except FileExistsError:
+            rmtree(RHEL7_HOME + 'keys')
+            copyfile(cert, RHEL7_HOME + 'keys/' + cert)
     return repo_files
 
 def get_rhel8_repo_files():
     exrpms.download_rhel8_rpms()
     repo_files=[]
-    os.chdir('/tmp/rhui-client-rpms/rhel8/')
+    os.chdir(RHEL8_HOME)
+    try:
+        os.mkdir(RHEL8_HOME + 'certs/')
+        os.mkdir(RHEL8_HOME + 'keys/')
+    except FileExistsError:
+        rmtree(RHEL8_HOME + 'certs')
+        rmtree(RHEL8_HOME + 'keys')
+        os.mkdir(RHEL8_HOME + 'certs/')
+        os.mkdir(RHEL8_HOME + 'keys/')
     for file in glob.iglob('**/*.repo', recursive=True):
-        repo_files.append(file)
+        repo_files.append(RHEL8_HOME + file)
+    for cert in glob.iglob('**/.crt', recursive=True):
+        try:
+            copyfile(cert, RHEL8_HOME + 'certs/' + cert)
+        except FileExistsError:
+            rmtree(RHEL8_HOME + 'certs')
+            copyfile(cert, RHEL8_HOME + 'certs/' + cert)
+    for key in glob.iglob('**/.key', recursive=True):
+        try:
+            copyfile(key, RHEL8_HOME + 'keys/' + key)
+        except FileExistsError:
+            rmtree(RHEL8_HOME + 'keys')
+            copyfile(key, RHEL8_HOME + 'keys/' + key)
     return repo_files
 
+#Combining certs doesn't work
+#Combining keys doesn't work
+'''
 def combine_certs(dir):
     os.chdir('/tmp/rhui-client-rpms/' + dir)
     for file in glob.iglob('*/etc/pki/rhui/product/*.crt', recursive=True): 
@@ -44,6 +107,7 @@ def combine_keys(dir):
          with open(file, 'r') as key: 
             with open('/tmp/rhui-client-rpms/' + dir + '/master-content-key.key', 'a+') as master:
                 master.write(key.read())
+'''
 
 # What if the CA is bad in cert[0], future code should include comparison check for these certs
 def get_ca():
@@ -55,31 +119,29 @@ def get_ca():
         with open('rhui-ca.crt', 'w+') as master:
             master.write(ca.read())
 
+'''
+Test repo_files Output:
+['rh-amazon-rhui-client-rhs30-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-rhs30.repo', 'rh-amazon-rhui-client-rhs30-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-client-config-rhs30.repo', 'rh-amazon-rhui-client-jbeap72-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-jbeap-7.2.repo', 'rh-amazon-rhui-client-jbeap72-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-client-config-jbeap-7.2.repo', 'rh-amazon-rhui-client-jbeap71-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-jbeap-7.1.repo', 'rh-amazon-rhui-client-jbeap71-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-client-config-jbeap-7.1.repo', 'rh-amazon-rhui-client-jbeap70-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-jbeap-7.0.repo', 'rh-amazon-rhui-client-jbeap70-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-client-config-jbeap-7.0.repo', 'rh-amazon-rhui-client-jbeap7-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-jbeap7.repo', 'rh-amazon-rhui-client-jbeap7-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-client-config-jbeap7.repo', 'rh-amazon-rhui-client-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui.repo', 'rh-amazon-rhui-client-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-client-config.repo', 'rh-amazon-rhui-client-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-beta.repo']
+'''
 def get_repo_specifics(repo_files):
-#    repo_list = {}
-#    for file in repo_files:
-#        config.read(file)
-#        repo_list[file]={}
-#        for i in config.sections():
-#            repo_list[file][i]={}
-#            repo_list[file][i]['mirrorlist'] = config[i]['mirrorlist'] 
-#            repo_list[file][i]['sslcacert'] = config[i]['sslcacert']   # removed because all certs are combined
-#            repo_list[file][i]['sslclientcert'] = config[i]['sslclientcert'] # removed because all certs are combined
-#            repo_list[file][i]['sslclientkey'] = config[i]['sslclientkey'] # removed because all certs are combined
-#    return repo_list
     repo_list = []
-    for file in repo_files: 
+    uniq_list = []
+    for file in repo_files:
         config = configparser.ConfigParser()
-        config.read(file) 
-        for mirror in config.sections(): 
-            mirror_dict = {} 
-            mirror_dict[mirror] = config[mirror]['mirrorlist'] 
-            repo_list.append(mirror_dict)
-    new_list = []
-    for repo in repo_list:
-        if repo not in new_list:
-            new_list.append(repo)
-    return new_list
+        config.read(file)
+        for section in config.sections():
+            if section not in uniq_list:
+                uniq_list.append(section)
+                name = {}
+                name[section]={}
+                name[section]['mirrorlist'] = config[section]['mirrorlist']
+                name[section]['sslcacert'] = config[section]['sslcacert']
+                name[section]['sslclientcert'] = config[section]['sslclientcert']
+                name[section]['sslclientkey'] = config[section]['sslclientkey']
+                repo_list.append(name)
+            else:
+                pass
+    return repo_list
 
 def get_mirror_list():
     exrpms.make_dir()
@@ -89,23 +151,7 @@ def get_mirror_list():
     rhel7_filtered_repo_mirror = get_repo_specifics(get_rhel7_repo_files())
     global rhel8_filtered_repo_mirror
     rhel8_filtered_repo_mirror = get_repo_specifics(get_rhel8_repo_files())
-    combine_certs('rhel6')
-    combine_certs('rhel7')
-    combine_certs('rhel8')
-    combine_keys('rhel6')
-    combine_keys('rhel7')
-    combine_keys('rhel8')
     get_ca()
-#DEBUGGING
-#    print('rhel6 repo list: ' + str(len(rhel6_filtered_repo_mirror)))
-#    for i in rhel6_filtered_repo_mirror:
-#        print(i)
-#    print('rhel7 repo list: ' + str(len(rhel7_filtered_repo_mirror)))
-#   for i in rhel7_filtered_repo_mirror:
-#        print(i)
-#    print('rhel8 repo list: ' + str(len(rhel8_filtered_repo_mirror)))
-#    for i in rhel8_filtered_repo_mirror:
-#        print(i)
 
 def replace_region(key, value, region):
     if 'REGION' in value or 'REGION' in key:
@@ -133,3 +179,19 @@ def replace_releasever(key, value, release):
         url = value
         name = key
     return name, url
+
+if __name__ == "__main__":
+    print('get_rhel6_repo_files: ')
+    print(get_rhel6_repo_files())
+    print('get_rhel7_repo_files: ')
+    print(get_rhel7_repo_files())
+    print('get_rhel8_repo_files: ')
+    print(get_rhel8_repo_files())
+    get_mirror_list()
+    print('rhel6_filtered_repo_mirror: ' + str(len(rhel6_filtered_repo_mirror)))
+    print(rhel6_filtered_repo_mirror)
+    print('rhel7_filtered_repo_mirror: ' + str(len(rhel7_filtered_repo_mirror)))
+    print(rhel7_filtered_repo_mirror)
+    print('rhel8_filtered_repo_mirror: ' + str(len(rhel8_filtered_repo_mirror)))
+    print(rhel8_filtered_repo_mirror)
+

@@ -74,3 +74,8 @@ def download_rhel8_rpms():
 def extract(rpm):
     os.system('rpm2cpio ' + rpm + ' | cpio -idu')
     
+if __name__ == "__main__":
+    make_dir()
+    download_rhel6_rpms()
+    download_rhel7_rpms()
+    download_rhel8_rpms()

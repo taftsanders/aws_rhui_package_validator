@@ -21,7 +21,7 @@ step 4: release version
 def get_rhel6_repos():
     rhel6_mirrors = []
 #    regions = gl.get_regions()
-    regions = ['us-east-1','us-east-1','us-east-1'] # For faster testing REMOVE ME
+    regions = ['us-east-1','us-east-1','us-east-1'] # For faster testing, REMOVE ME FOR PROD
     for region in regions[:len(regions)-2]:
         req = urllib3.PoolManager(
             cert_reqs = 'CERT_REQUIRED',
@@ -43,3 +43,6 @@ def get_rhel6_repos():
                     print('Getting mirror list for: ' + custom_name3)
                     rhel6_mirrors.append(repo)
     return rhel6_mirrors
+
+if __name__ == "__main__":
+    print(get_rhel6_repos)

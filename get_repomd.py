@@ -51,3 +51,6 @@ def get_RHEL6_repomd():
 
 #    print(len(gr.get_rhel6_repos()))
 
+if __name__ == "__main__":
+    print(get_instance_headers())
+    print(get_RHEL6_repomd())
