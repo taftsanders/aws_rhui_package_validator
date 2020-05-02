@@ -21,20 +21,17 @@ def get_rhel6_repo_files():
     os.chdir(RHEL6_HOME)
     try:
         os.mkdir(RHEL6_HOME + 'certs/')
-        os.mkdir(RHEL6_HOME + 'keys/')
     except FileExistsError:
         rmtree(RHEL6_HOME + 'certs')
-        rmtree(RHEL6_HOME + 'keys')
         os.mkdir(RHEL6_HOME + 'certs/')
-        os.mkdir(RHEL6_HOME + 'keys/')
     for file in glob.iglob('**/*.repo', recursive=True):
         repo_files.append(RHEL6_HOME + file)
     for cert in glob.iglob('**/*.crt', recursive=True):
         os.makedirs(os.path.dirname('certs/' + cert.split('/',1)[1]), exist_ok=True)
         copyfile(cert, RHEL6_HOME + 'certs/' + cert.split('/',1)[1])
     for key in glob.iglob('**/*.key', recursive=True):
-        os.makedirs(os.path.dirname('keys/' + key.split('/',1)[1]), exist_ok=True)
-        copyfile(key, RHEL6_HOME + 'keys/' + key.split('/',1)[1])
+        os.makedirs(os.path.dirname('certs/' + key.split('/',1)[1]), exist_ok=True)
+        copyfile(key, RHEL6_HOME + 'certs/' + key.split('/',1)[1])
     return repo_files
 
 def get_rhel7_repo_files():
@@ -43,20 +40,17 @@ def get_rhel7_repo_files():
     os.chdir(RHEL7_HOME)
     try:
         os.mkdir(RHEL7_HOME + 'certs/')
-        os.mkdir(RHEL7_HOME + 'keys/')
     except FileExistsError:
         rmtree(RHEL7_HOME + 'certs')
-        rmtree(RHEL7_HOME + 'keys')
         os.mkdir(RHEL7_HOME + 'certs/')
-        os.mkdir(RHEL7_HOME + 'keys/')
     for file in glob.iglob('**/*.repo', recursive=True):
         repo_files.append(RHEL7_HOME + file)
     for cert in glob.iglob('**/*.crt', recursive=True):
         os.makedirs(os.path.dirname('certs/' + cert.split('/',1)[1]), exist_ok=True)
         copyfile(cert, RHEL7_HOME + 'certs/' + cert.split('/',1)[1])
     for key in glob.iglob('**/*.key', recursive=True):
-        os.makedirs(os.path.dirname('keys/' + key.split('/',1)[1]), exist_ok=True)
-        copyfile(key, RHEL7_HOME + 'keys/' + key.split('/',1)[1])
+        os.makedirs(os.path.dirname('certs/' + key.split('/',1)[1]), exist_ok=True)
+        copyfile(key, RHEL7_HOME + 'certs/' + key.split('/',1)[1])
     return repo_files
 
 def get_rhel8_repo_files():
@@ -65,20 +59,17 @@ def get_rhel8_repo_files():
     os.chdir(RHEL8_HOME)
     try:
         os.mkdir(RHEL8_HOME + 'certs/')
-        os.mkdir(RHEL8_HOME + 'keys/')
     except FileExistsError:
         rmtree(RHEL8_HOME + 'certs')
-        rmtree(RHEL8_HOME + 'keys')
         os.mkdir(RHEL8_HOME + 'certs/')
-        os.mkdir(RHEL8_HOME + 'keys/')
     for file in glob.iglob('**/*.repo', recursive=True):
         repo_files.append(RHEL8_HOME + file)
     for cert in glob.iglob('**/*.crt', recursive=True):
         os.makedirs(os.path.dirname('certs/' + cert.split('/',1)[1]), exist_ok=True)
         copyfile(cert, RHEL8_HOME + 'certs/' + cert.split('/',1)[1])
     for key in glob.iglob('**/*.key', recursive=True):
-        os.makedirs(os.path.dirname('keys/' + key.split('/',1)[1]), exist_ok=True)
-        copyfile(key, RHEL8_HOME + 'keys/' + key.split('/',1)[1])
+        os.makedirs(os.path.dirname('certs/' + key.split('/',1)[1]), exist_ok=True)
+        copyfile(key, RHEL8_HOME + 'certs/' + key.split('/',1)[1])
     return repo_files
 
 #Combining certs doesn't work
