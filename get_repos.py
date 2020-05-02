@@ -18,6 +18,33 @@ step 2: repo
 step 3: arch
 step 4: release version
 '''
+def replace_region(key, value, region):
+    if 'REGION' in value or 'REGION' in key:
+        url = value.replace('REGION', region)
+        name = key.replace('REGION', region)
+    else:
+        url = value
+        name = key
+    return name, url
+
+def replace_basearch(key, value, arch):
+    if '$basearch' in value or '$basearch' in key:
+        url = value.replace('$basearch', arch)
+        name = key.replace('$basearch', arch)
+    else:
+        url = value
+        name = key 
+    return name, url
+
+def replace_releasever(key, value, release):
+    if '$releasever' in value or '$releasever' in key:
+        url = value.replace('$releasever', release)
+        name = key.replace('$releasever', release)
+    else:
+        url = value
+        name = key
+    return name, url
+
 def get_rhel6_repos():
     rhel6_mirrors = []
 #    regions = gl.get_regions()
@@ -31,11 +58,11 @@ def get_rhel6_repos():
             )
         for repo_mirror in gm.rhel6_filtered_repo_mirror:
             name, url = list(repo_mirror.items())[0]           
-            name1, url1 = gm.replace_region(name, url, region)
+            name1, url1 = replace_region(name, url, region)
             for arch in RHEL6_ARCH:
-                name2, url2 = gm.replace_basearch(name1, url1, arch)
+                name2, url2 = replace_basearch(name1, url1, arch)
                 for release in RHEL6_RELEASES:
-                    name3, url3 = gm.replace_releasever(name2, url2, release)
+                    name3, url3 = replace_releasever(name2, url2, release)
                     repo = {}
                     baserepo = req.request('GET', url3).data.decode('utf-8')
                     custom_name3 = name3 + '-' + arch + '-' + release

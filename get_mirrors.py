@@ -29,10 +29,12 @@ def get_rhel6_repo_files():
         os.mkdir(RHEL6_HOME + 'keys/')
     for file in glob.iglob('**/*.repo', recursive=True):
         repo_files.append(RHEL6_HOME + file)
-    for cert in glob.iglob('**/.crt', recursive=True):
-        copyfile(cert, RHEL6_HOME + 'certs/' + cert)
-    for key in glob.iglob('**/.key', recursive=True):
-        copyfile(key, RHEL6_HOME + 'keys/' + key)
+    for cert in glob.iglob('**/*.crt', recursive=True):
+        os.makedirs(os.path.dirname('certs/' + cert.split('/',1)[1]), exist_ok=True)
+        copyfile(cert, RHEL6_HOME + 'certs/' + cert.split('/',1)[1])
+    for key in glob.iglob('**/*.key', recursive=True):
+        os.makedirs(os.path.dirname('keys/' + key.split('/',1)[1]), exist_ok=True)
+        copyfile(key, RHEL6_HOME + 'keys/' + key.split('/',1)[1])
     return repo_files
 
 def get_rhel7_repo_files():
@@ -49,18 +51,12 @@ def get_rhel7_repo_files():
         os.mkdir(RHEL7_HOME + 'keys/')
     for file in glob.iglob('**/*.repo', recursive=True):
         repo_files.append(RHEL7_HOME + file)
-    for cert in glob.iglob('**/.crt', recursive=True):
-        try:
-            copyfile(cert, RHEL7_HOME + 'certs/' + cert)
-        except FileExistsError:
-            rmtree(RHEL7_HOME + 'certs')
-            copyfile(cert, RHEL7_HOME + 'certs/' + cert)
-    for key in glob.iglob('**/.key', recursive=True):
-        try:
-            copyfile(key, RHEL7_HOME + 'keys/' + key)
-        except FileExistsError:
-            rmtree(RHEL7_HOME + 'keys')
-            copyfile(cert, RHEL7_HOME + 'keys/' + cert)
+    for cert in glob.iglob('**/*.crt', recursive=True):
+        os.makedirs(os.path.dirname('certs/' + cert.split('/',1)[1]), exist_ok=True)
+        copyfile(cert, RHEL7_HOME + 'certs/' + cert.split('/',1)[1])
+    for key in glob.iglob('**/*.key', recursive=True):
+        os.makedirs(os.path.dirname('keys/' + key.split('/',1)[1]), exist_ok=True)
+        copyfile(key, RHEL7_HOME + 'keys/' + key.split('/',1)[1])
     return repo_files
 
 def get_rhel8_repo_files():
@@ -77,18 +73,12 @@ def get_rhel8_repo_files():
         os.mkdir(RHEL8_HOME + 'keys/')
     for file in glob.iglob('**/*.repo', recursive=True):
         repo_files.append(RHEL8_HOME + file)
-    for cert in glob.iglob('**/.crt', recursive=True):
-        try:
-            copyfile(cert, RHEL8_HOME + 'certs/' + cert)
-        except FileExistsError:
-            rmtree(RHEL8_HOME + 'certs')
-            copyfile(cert, RHEL8_HOME + 'certs/' + cert)
-    for key in glob.iglob('**/.key', recursive=True):
-        try:
-            copyfile(key, RHEL8_HOME + 'keys/' + key)
-        except FileExistsError:
-            rmtree(RHEL8_HOME + 'keys')
-            copyfile(key, RHEL8_HOME + 'keys/' + key)
+    for cert in glob.iglob('**/*.crt', recursive=True):
+        os.makedirs(os.path.dirname('certs/' + cert.split('/',1)[1]), exist_ok=True)
+        copyfile(cert, RHEL8_HOME + 'certs/' + cert.split('/',1)[1])
+    for key in glob.iglob('**/*.key', recursive=True):
+        os.makedirs(os.path.dirname('keys/' + key.split('/',1)[1]), exist_ok=True)
+        copyfile(key, RHEL8_HOME + 'keys/' + key.split('/',1)[1])
     return repo_files
 
 #Combining certs doesn't work
@@ -107,7 +97,6 @@ def combine_keys(dir):
          with open(file, 'r') as key: 
             with open('/tmp/rhui-client-rpms/' + dir + '/master-content-key.key', 'a+') as master:
                 master.write(key.read())
-'''
 
 # What if the CA is bad in cert[0], future code should include comparison check for these certs
 def get_ca():
@@ -118,7 +107,7 @@ def get_ca():
     with open(ca_files[0], 'r') as ca:
         with open('rhui-ca.crt', 'w+') as master:
             master.write(ca.read())
-
+'''
 '''
 Test repo_files Output:
 ['rh-amazon-rhui-client-rhs30-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-rhs30.repo', 'rh-amazon-rhui-client-rhs30-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-client-config-rhs30.repo', 'rh-amazon-rhui-client-jbeap72-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-jbeap-7.2.repo', 'rh-amazon-rhui-client-jbeap72-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-client-config-jbeap-7.2.repo', 'rh-amazon-rhui-client-jbeap71-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-jbeap-7.1.repo', 'rh-amazon-rhui-client-jbeap71-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-client-config-jbeap-7.1.repo', 'rh-amazon-rhui-client-jbeap70-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-jbeap-7.0.repo', 'rh-amazon-rhui-client-jbeap70-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-client-config-jbeap-7.0.repo', 'rh-amazon-rhui-client-jbeap7-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-jbeap7.repo', 'rh-amazon-rhui-client-jbeap7-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-client-config-jbeap7.repo', 'rh-amazon-rhui-client-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui.repo', 'rh-amazon-rhui-client-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-client-config.repo', 'rh-amazon-rhui-client-3.0.26-1.el6.noarch.rpm/etc/yum.repos.d/redhat-rhui-beta.repo']
@@ -151,34 +140,6 @@ def get_mirror_list():
     rhel7_filtered_repo_mirror = get_repo_specifics(get_rhel7_repo_files())
     global rhel8_filtered_repo_mirror
     rhel8_filtered_repo_mirror = get_repo_specifics(get_rhel8_repo_files())
-    get_ca()
-
-def replace_region(key, value, region):
-    if 'REGION' in value or 'REGION' in key:
-        url = value.replace('REGION', region)
-        name = key.replace('REGION', region)
-    else:
-        url = value
-        name = key
-    return name, url
-
-def replace_basearch(key, value, arch):
-    if '$basearch' in value or '$basearch' in key:
-        url = value.replace('$basearch', arch)
-        name = key.replace('$basearch', arch)
-    else:
-        url = value
-        name = key 
-    return name, url
-
-def replace_releasever(key, value, release):
-    if '$releasever' in value or '$releasever' in key:
-        url = value.replace('$releasever', release)
-        name = key.replace('$releasever', release)
-    else:
-        url = value
-        name = key
-    return name, url
 
 if __name__ == "__main__":
     print('get_rhel6_repo_files: ')
