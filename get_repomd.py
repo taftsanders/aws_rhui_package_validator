@@ -10,6 +10,9 @@ import warnings
 warnings.simplefilter('ignore', urllib3.exceptions.SecurityWarning)
 
 AWS_INST_HEADER = {}
+RHEL6_CERTS = '/tmp/rhui-client-rpms/rhel6/certs'
+RHEL7_CERTS = '/tmp/rhui-client-rpms/rhel7/certs'
+RHEL8_CERTS = '/tmp/rhui-client-rpms/rhel8/certs'
 
 def get_instance_headers(AWS_HOST = 'ec2-3-86-214-153.compute-1.amazonaws.com',
                             AWS_USER = 'ec2-user',
@@ -28,18 +31,18 @@ def get_instance_headers(AWS_HOST = 'ec2-3-86-214-153.compute-1.amazonaws.com',
 Make the calls here to get the repodata and parse it
 '''
 def get_RHEL6_repomd():
-    gm.get_mirror_list()
     for dic in gr.get_rhel6_repos():
-        name, url = list(dic.items())[0]
+        name, values = list(dic.items())[0]
         req = urllib3.PoolManager(
             cert_reqs = 'CERT_REQUIRED',
-            ca_certs='/tmp/rhui-client-rpms/rhui-ca.crt',
-            cert_file = '/tmp/rhui-client-rpms/rhel6/master-content-cert.crt',
-            key_file = '/tmp/rhui-client-rpms/rhel6/master-content-key.key',
+            ca_certs=RHEL6_CERTS + values['sslcacert'],
+            cert_file = RHEL6_CERTS + values['sslclientcert'],
+            key_file = RHEL6_CERTS + values['sslclientkey'],
             )
         print(name)
-        for repo in url:
-# The RHUI AWS headers have to be added to make this call            
+        for repo in values['baseurl']:
+# The RHUI AWS headers have to be added to make this call
+            get_instance_headers()            
             repomd = req.request('GET',
                                 repo + '/repodata/repomd.xml',
                                 fields=AWS_INST_HEADER,

@@ -15,6 +15,8 @@ rhel6_filtered_repo_mirror = []
 rhel7_filtered_repo_mirror = []
 rhel8_filtered_repo_mirror = []
 
+exrpms.make_dir()
+
 def get_rhel6_repo_files():
     exrpms.download_rhel6_rpms()
     repo_files=[]
@@ -123,12 +125,15 @@ def get_repo_specifics(repo_files):
                 pass
     return repo_list
 
-def get_mirror_list():
-    exrpms.make_dir()
+def get_rhel6_mirror_list():
     global rhel6_filtered_repo_mirror
     rhel6_filtered_repo_mirror = get_repo_specifics(get_rhel6_repo_files())
+
+def get_rhel7_mirror_list():
     global rhel7_filtered_repo_mirror
     rhel7_filtered_repo_mirror = get_repo_specifics(get_rhel7_repo_files())
+
+def get_rhel8_mirror_list():
     global rhel8_filtered_repo_mirror
     rhel8_filtered_repo_mirror = get_repo_specifics(get_rhel8_repo_files())
 
@@ -139,7 +144,9 @@ if __name__ == "__main__":
     print(get_rhel7_repo_files())
     print('get_rhel8_repo_files: ')
     print(get_rhel8_repo_files())
-    get_mirror_list()
+    get_rhel6_mirror_list()
+    get_rhel7_mirror_list()
+    get_rhel8_mirror_list()
     print('rhel6_filtered_repo_mirror: ' + str(len(rhel6_filtered_repo_mirror)))
     print(rhel6_filtered_repo_mirror)
     print('rhel7_filtered_repo_mirror: ' + str(len(rhel7_filtered_repo_mirror)))

@@ -50,6 +50,7 @@ step 3: arch
 step 4: release version
 '''
 def get_rhel6_repos():
+    gm.get_rhel6_mirror_list()
     rhel6_mirrors = []
 #    regions = gl.get_regions()
     regions = ['us-east-1','us-east-1','us-east-1'] # For faster testing, REMOVE ME FOR PROD
@@ -85,11 +86,14 @@ def get_rhel6_repos():
                     repo[custom_name3]['sslcacert'] = values['sslcacert']
                     repo[custom_name3]['sslclientcert'] = values['sslclientcert']
                     repo[custom_name3]['sslclientkey'] = values['sslclientkey']
+                    #It would be nice to have cds1 in [0] and cds2 in [1] for all lists
                     repo[custom_name3]['baseurl'] = baserepo.split('\n')
                     print('Getting mirror list for: ' + custom_name3)
                     rhel6_mirrors.append(repo)
     return rhel6_mirrors
 
 if __name__ == "__main__":
-    gm.get_mirror_list()
+    gm.get_rhel6_mirror_list()
+#    gm.get_rhel7_mirror_list()
+#    gm.get_rhel8_mirror_list()
     print(get_rhel6_repos())
