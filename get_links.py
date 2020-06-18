@@ -7,7 +7,7 @@ PARENT = 'http://download-node-02.eng.bos.redhat.com/brewroot/packages/rh-amazon
 RHEL6 = '1.el6/noarch/'
 RHEL7 = '1.el7/noarch/'
 RHEL8 = '1.el8/noarch/'
-PACKAGE = ''
+#PACKAGE = ''
 REGION_URL = 'https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html'
 req = urllib3.PoolManager()
 

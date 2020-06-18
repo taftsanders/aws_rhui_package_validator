@@ -6,6 +6,7 @@ import configparser
 from fabric.api import env
 from fabric.operations import run as fabric_run
 from fabric.context_managers import settings, hide 
+import xml.etree.ElementTree as ET
 import warnings
 warnings.simplefilter('ignore', urllib3.exceptions.SecurityWarning)
 
@@ -24,8 +25,8 @@ def get_instance_headers(AWS_HOST = 'ec2-3-86-214-153.compute-1.amazonaws.com',
     with settings(hide('everything'), host_string=AWS_HOST):
         results = fabric_run('sudo yum repolist | grep X-RHUI')
     global AWS_INST_HEADER
-    AWS_INST_HEADER['X-RHUI-ID'] = results.split()[1]
-    AWS_INST_HEADER['X-RHUI-SIGNATURE'] = results.split()[3]
+    AWS_INST_HEADER['X-RHUI-ID'] = results.split()[14]
+    AWS_INST_HEADER['X-RHUI-SIGNATURE'] = results.split()[16]
 
 '''
 Make the calls here to get the repodata and parse it
@@ -35,20 +36,35 @@ def get_RHEL6_repomd():
         name, values = list(dic.items())[0]
         req = urllib3.PoolManager(
             cert_reqs = 'CERT_REQUIRED',
-            ca_certs=RHEL6_CERTS + values['sslcacert'],
+            ca_certs = RHEL6_CERTS + values['sslcacert'],
             cert_file = RHEL6_CERTS + values['sslclientcert'],
             key_file = RHEL6_CERTS + values['sslclientkey'],
             )
+        print('cert_file: ' + RHEL6_CERTS + values['sslclientcert']) #DEBUG
+        print('key_file: ' + RHEL6_CERTS + values['sslclientkey']) #DEBUG
         print(name)
         for repo in values['baseurl']:
 # The RHUI AWS headers have to be added to make this call
-            get_instance_headers()            
+            get_instance_headers()
+            print(repo + '/repodata/repomd.xml') #DEBUG
+# USE XMLTODICT METHOD (xmltodict.parse(data, process_namespaces=True) )
             repomd = req.request('GET',
                                 repo + '/repodata/repomd.xml',
-                                fields=AWS_INST_HEADER,
+                                headers=AWS_INST_HEADER,
                                 )#.data.decode('utf-8')
             print('    '+repo.split('/')[2])
-            print('     |--HTTP: ' + str(repomd.status))
+            if repomd.status != 200:
+                print('     |--HTTP: ' + str(repomd.status))
+            else:
+                tree = ET.fromstring(repomd.data.decode('utf-8'))
+                root = tree.getroot()
+                primary_file_url = root[1][2].attrib['href']
+                primary_file = req.request('GET',
+                                    repo + primary_file_url,
+                                    headers=AWS_INST_HEADER,
+                                    )
+                
+
 # Check how rich parses XML
 # https://github.com/RedHatSatellite/satellite-cert-pprint
 
