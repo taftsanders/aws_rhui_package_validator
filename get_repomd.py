@@ -15,7 +15,7 @@ RHEL6_CERTS = '/tmp/rhui-client-rpms/rhel6/certs'
 RHEL7_CERTS = '/tmp/rhui-client-rpms/rhel7/certs'
 RHEL8_CERTS = '/tmp/rhui-client-rpms/rhel8/certs'
 
-def get_instance_headers(AWS_HOST = 'ec2-3-86-214-153.compute-1.amazonaws.com',
+def get_instance_headers(AWS_HOST = 'ec2-3-83-144-209.compute-1.amazonaws.com',
                             AWS_USER = 'ec2-user',
                             SSH_KEY = '/home/tasander/.ssh/tasander.cer'
                             ):
