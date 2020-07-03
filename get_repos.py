@@ -90,6 +90,7 @@ def get_rhel6_repos():
                     repo[custom_name3]['baseurl'] = baserepo.split('\n')
                     print('Getting mirror list for: ' + custom_name3)
                     rhel6_mirrors.append(repo)
+    #print(len(rhel6_mirrors)) #DEBUG
     return rhel6_mirrors
 
 if __name__ == "__main__":
