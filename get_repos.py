@@ -5,13 +5,15 @@ import get_mirrors as gm
 import warnings
 warnings.simplefilter('ignore', urllib3.exceptions.SecurityWarning)
 
-
-RHEL6_RELEASES = ['6.10', '6Server']
+RHEL5_RELEASES = ['5.6', '5.7', '5.8', '5.9', '5.10', '5.11'] # curl -s  https://cdn.redhat.com/content/dist/rhel/rhui/server/5/ --cacert /etc/rhsm/ca/redhat-uep.pem --cert cdncert.pem | grep HREF | cut -d'=' -f4 | cut -d'"' -f2 | cut -d'/' -f1 | grep -v listing | grep -v '\.\.'
+RHEL5_ARCH = ['i386'] # if release=5.11: arch =[i386,x86_64]
+RHEL6_RELEASES = ['6.10', '6Server'] # curl -s https://cdn.redhat.com/content/dist/rhel/rhui/server/6/ --cacert /etc/rhsm/ca/redhat-uep.pem --cert cdncert.pem | grep HREF | cut -d'=' -f4 | cut -d'"' -f2 | cut -d'/' -f1 | grep -v listing | grep -v '\.\.'
 RHEL6_ARCH = ['i386', 'x86_64']
-RHEL7_RELEASES = ['7.3', '7.4', '7.5', '7.6', '7.7', '7.8']
+RHEL7_RELEASES = ['7.0', '7.1', '7.2', '7.3', '7.4', '7.5', '7.6', '7.7', '7.8'] # curl -s https://cdn.redhat.com/content/dist/rhel/rhui/server/7/ --cacert /etc/rhsm/ca/redhat-uep.pem --cert cdncert.pem | grep HREF | cut -d'=' -f4 | cut -d'"' -f2 | cut -d'/' -f1 | grep -v listing | grep -v '\.\.'
 RHEL7_ARCH = ['x86_64']
-RHEL8_RELEASES = ['8']
-RHEL8_ARCH = ['aarch64', 'ppc64le', 's390x', 'x86_64']
+RHEL8_RELEASES = ['8'] # curl -s  https://cdn.redhat.com/content/dist/rhel8/rhui/ --cacert /etc/rhsm/ca/redhat-uep.pem --cert cdncert.pem | grep HREF | cut -d'=' -f4 | cut -d'"' -f2 | grep -v 'listing' | grep -v '\.'
+RHEL8_ARCH = ['aarch64', 'ppc64le', 's390x', 'x86_64'] # curl -s  https://cdn.redhat.com/content/dist/rhel8/rhui/8 --cacert /etc/rhsm/ca/redhat-uep.pem --cert cdncert.pem | grep HREF | cut -d'=' -f4 | cut -d'/' -f2 | grep -v '\.\.'
+
 RHEL6_CERTS = '/tmp/rhui-client-rpms/rhel6/certs'
 RHEL7_CERTS = '/tmp/rhui-client-rpms/rhel7/certs'
 RHEL8_CERTS = '/tmp/rhui-client-rpms/rhel8/certs'
