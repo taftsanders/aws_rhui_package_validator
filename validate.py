@@ -5,10 +5,20 @@ import get_links as gl
 import textwrap
 
 def main():
+    repomd.get_RHEL6_repomd()
+
+    '''
+    Options for new features to come!
     import argparse
     parser = argparse.ArgumentParser(prog='validate',
                                     usage='%(prog)s [options] path',
                                     description='Validate the contents of a repository')
+
+    parser.add_argument('--version',
+                        action='store',
+                        type=int,
+                        nargs=1,
+                        help='Major version in which to query for')
     parser.add_argument('-R',
                         '--region',
                         action='store',
@@ -96,10 +106,7 @@ def main():
                         type=str,
                         nargs=1,
                         help='a entitlement key for the repo you wish to query')
-    parser.parse_args()
-
-    
-    repomd.get_aws_instance_headers()
-    repomd.get_RHEL6_repomd()
+    args = parser.parse_args()
+    '''
 
 main()

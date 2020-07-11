@@ -33,79 +33,65 @@ def get_aws_instance_headers(AWS_HOST=None, AWS_USER=None, SSH_KEY=None):
 Make the calls here to get the repodata and parse it
 '''
 def get_RHEL6_repomd(sslcacert=None, sslclientcert=None, sslclientkey=None, baseurl=None):
-    if sslcacert==None and sslclientcert==None and sslclientkey==None:
         for dic in gr.get_rhel6_repos():
             name, values = list(dic.items())[0]
-            req = urllib3.PoolManager(
-                cert_reqs = 'CERT_REQUIRED',
-                ca_certs = RHEL6_CERTS + values['sslcacert'],
-                cert_file = RHEL6_CERTS + values['sslclientcert'],
-                key_file = RHEL6_CERTS + values['sslclientkey'],
-                )
-            #print('ca_file:' + RHEL6_CERTS + values['sslcacert']) #DEBUG
-            #print('cert_file: ' + RHEL6_CERTS + values['sslclientcert']) #DEBUG
-            #print('key_file: ' + RHEL6_CERTS + values['sslclientkey']) #DEBUG
+            if sslcacert==None and sslclientcert==None and sslclientkey==None:
+                req = urllib3.PoolManager(
+                    cert_reqs = 'CERT_REQUIRED',
+                    ca_certs = RHEL6_CERTS + values['sslcacert'],
+                    cert_file = RHEL6_CERTS + values['sslclientcert'],
+                    key_file = RHEL6_CERTS + values['sslclientkey'],
+                    )
+                #print('ca_file:' + RHEL6_CERTS + values['sslcacert']) #DEBUG
+                #print('cert_file: ' + RHEL6_CERTS + values['sslclientcert']) #DEBUG
+                #print('key_file: ' + RHEL6_CERTS + values['sslclientkey']) #DEBUG
+            elif sslcacert!=None and sslclientcert!=None and sslclientcert!=None:
+                req = urllib3.PoolManager(
+                    cert_reqs = 'CERT_REQUIRED',
+                    ca_certs = sslcacert,
+                    cert_file = sslclientcert,
+                    key_file = sslclientkey,
+                    )
+                #print('ca_file: ' + sslcacert) #DEBUG
+                #print('cert_file: ' + sslclientcert) #DEBUG
+                #print('key_file: ' + sslclientkey) #DEBUG
             print(name)
-            for repo in values['baseurl']:
-    # The RHUI AWS headers have to be added to make this call
+            if baseurl == None:
+                for repo in values['baseurl']:
+    # The RHUI AWS headers have to be added here to make this call
+                    get_aws_instance_headers()
+                    #print(repo + '/repodata/repomd.xml') #DEBUG
+                    repomd = req.request('GET',
+                            repo + '/repodata/repomd.xml', headers=AWS_INST_HEADER)#.data.decode('utf-8')
+                    print('    '+repo.split('/')[2])
+                    if repomd.status != 200:
+                        print('     |--HTTP: ' + str(repomd.status))
+                    else:
+                        primary_href = x2d.parse(repomd.data.decode('utf-8'))['repomd']['data'][2]['location']['@href']
+                        #print(primary_href) #DEBUG
+                        primary = req.request('GET',
+                                        repo + '/' + primary_href,
+                                        headers=AWS_INST_HEADER,
+                                        )
+                        package_count = str(urllib3.response.GzipDecoder().decompress(primary.data)).split( )[3][10:][:-1]
+                        print(package_count)
+            elif baseurl != None:
                 get_aws_instance_headers()
-                #print(repo + '/repodata/repomd.xml') #DEBUG
-    # USE XMLTODICT METHOD (xmltodict.parse(data, process_namespaces=True) )
                 repomd = req.request('GET',
-                                    repo + '/repodata/repomd.xml',
-                                    headers=AWS_INST_HEADER,
-                                    )#.data.decode('utf-8')
-                print('    '+repo.split('/')[2])
+                            baseurl + '/repodata/repomd.xml', headers=AWS_INST_HEADER)#.data.decode('utf-8')
+                print('    '+baseurl.split('/')[2])
                 if repomd.status != 200:
                     print('     |--HTTP: ' + str(repomd.status))
-    #            else:
-    #                tree = ET.fromstring(repomd.data.decode('utf-8'))
-    #                root = tree.getroot()
-    #                primary_file_url = root[1][2].attrib['href']
-    #                primary_file = req.request('GET',
-    #                                    repo + primary_file_url,
-    #                                    headers=AWS_INST_HEADER,
-    #                                    )
                 else:
                     primary_href = x2d.parse(repomd.data.decode('utf-8'))['repomd']['data'][2]['location']['@href']
                     #print(primary_href) #DEBUG
                     primary = req.request('GET',
-                                    repo + '/' + primary_href,
+                                    baseurl + '/' + primary_href,
                                     headers=AWS_INST_HEADER,
                                     )
                     package_count = str(urllib3.response.GzipDecoder().decompress(primary.data)).split( )[3][10:][:-1]
                     print(package_count)
-    else:
-        req = urllib3.PoolManager(
-                cert_reqs = 'CERT_REQUIRED',
-                ca_certs = sslcacert,
-                cert_file = sslclientcert,
-                key_file = sslclientkey,
-                )
-        #print('baseurl: ' + baseurl) #DEBUG        
-        #print('ca_file: ' + sslcacert) #DEBUG
-        #print('cert_file: ' + sslclientcert) #DEBUG
-        #print('key_file: ' + sslclientkey) #DEBUG
-        print(baseurl)
-        get_aws_instance_headers()
-        repomd = req.request('GET',
-                            baseurl + '/repodata/repomd.xml',
-                            headers=AWS_INST_HEADER,
-                            )
-        #print(repomd.data.decode('utf-8')) DEBUG
-        if repomd.status != 200:
-            print('     |--HTTP: ' + str(repomd.status))
-        else:
-            primary_href = x2d.parse(repomd.data.decode('utf-8'))['repomd']['data'][2]['location']['@href']
-            #print(primary_href) #DEBUG
-            primary = req.request('GET',
-                            baseurl + '/' + primary_href,
-                            headers=AWS_INST_HEADER,
-                            )
-            package_count = str(urllib3.response.GzipDecoder().decompress(primary.data)).split( )[3][10:][:-1]
-            print(package_count) 
-
-#    print(len(gr.get_rhel6_repos()))
+#    print(Total number of repos for RHEL 6: str(len(gr.get_rhel6_repos()))) #DEBUG
 
 if __name__ == "__main__":
     print(get_aws_instance_headers())
