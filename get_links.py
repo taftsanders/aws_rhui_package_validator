@@ -7,20 +7,21 @@ PARENT = 'http://download-node-02.eng.bos.redhat.com/brewroot/packages/rh-amazon
 RHEL6 = '1.el6/noarch/'
 RHEL7 = '1.el7/noarch/'
 RHEL8 = '1.el8/noarch/'
-#PACKAGE = ''
 REGION_URL = 'https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html'
+VERSION=None
 req = urllib3.PoolManager()
 
 def get_latest_version():
     rpm_version = req.request('GET', PARENT)
     soup = bs4.BeautifulSoup(rpm_version.data, 'html.parser')
     latest = soup.find_all("a")[-5].text
-    print('Getting latest rpm version: ')
-    return latest
-
-VERSION = get_latest_version()
+    print('Getting latest rpm version: ' + latest.split()[0])
+    global VERSION
+    VERSION=latest
 
 def get_rhel6_rpms():
+    if not VERSION:
+        get_latest_version()
     rhel6_rpms = []
     rpm_page = req.request('GET', PARENT + VERSION + RHEL6)
     soup = bs4.BeautifulSoup(rpm_page.data, 'html.parser')
@@ -33,6 +34,8 @@ def get_rhel6_rpms():
     return rhel6_rpms
 
 def get_rhel7_rpms():
+    if not VERSION:
+        get_latest_version()
     rhel7_rpms = []
     rpm_page = req.request('GET', PARENT + VERSION + RHEL7)
     soup = bs4.BeautifulSoup(rpm_page.data, 'html.parser')
@@ -45,6 +48,8 @@ def get_rhel7_rpms():
     return rhel7_rpms
 
 def get_rhel8_rpms():
+    if not VERSION:
+        get_latest_version()
     rhel8_rpms = []
     rpm_page = req.request('GET', PARENT + VERSION + RHEL8)
     soup = bs4.BeautifulSoup(rpm_page.data, 'html.parser')

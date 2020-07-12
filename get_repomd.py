@@ -59,7 +59,8 @@ def get_RHEL6_repomd(sslcacert=None, sslclientcert=None, sslclientkey=None, base
             if baseurl == None:
                 for repo in values['baseurl']:
     # The RHUI AWS headers have to be added here to make this call
-                    get_aws_instance_headers()
+#                    if not AWS_INST_HEADER:
+#                        get_aws_instance_headers()
                     #print(repo + '/repodata/repomd.xml') #DEBUG
                     repomd = req.request('GET',
                             repo + '/repodata/repomd.xml', headers=AWS_INST_HEADER)#.data.decode('utf-8')
@@ -76,7 +77,8 @@ def get_RHEL6_repomd(sslcacert=None, sslclientcert=None, sslclientkey=None, base
                         package_count = str(urllib3.response.GzipDecoder().decompress(primary.data)).split( )[3][10:][:-1]
                         print(package_count)
             elif baseurl != None:
-                get_aws_instance_headers()
+#                if not AWS_INST_HEADER:
+#                    get_aws_instance_headers()
                 repomd = req.request('GET',
                             baseurl + '/repodata/repomd.xml', headers=AWS_INST_HEADER)#.data.decode('utf-8')
                 print('    '+baseurl.split('/')[2])
