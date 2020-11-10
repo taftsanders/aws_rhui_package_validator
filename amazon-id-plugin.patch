@@ -1,0 +1,12 @@
+--- /usr/lib/yum-plugins/amazon-id.py	2020-06-03 14:59:01.000000000 +0000
++++ amazon-id.new	2020-07-30 04:10:17.681696508 +0000
+@@ -66,6 +66,8 @@
+         # Signature does not need to be encoded, it already is.
+         id_doc = base64.urlsafe_b64encode(id_doc)
+         id_sig = base64.urlsafe_b64encode(id_sig)
++        print('X-RHUI-ID: ' + id_doc)
++        print('X-RHUI-SIGNATURE: ' + id_sig)
+ 
+         # Add the headers to all RHUI repos
+         for repo in rhui_repos:
+
